@@ -1,0 +1,38 @@
+version: "3.3"
+
+services:
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      - db
+    entrypoint: /entrypoint.sh
+    volumes:
+      - staticfiles:/backend/staticfiles
+  nginx:
+    build:
+      context: .
+      dockerfile: ./webserver/Dockerfile
+    restart: always
+    volumes:
+      - staticfiles:/staticfiles
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+volumes:
+  db:
+  staticfiles:

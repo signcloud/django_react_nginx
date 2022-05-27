@@ -1,0 +1,5 @@
+venv
+.idea
+.git
+build
+frontend/node_modules
